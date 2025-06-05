@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Connection configuration ###
+/src/main/resources/

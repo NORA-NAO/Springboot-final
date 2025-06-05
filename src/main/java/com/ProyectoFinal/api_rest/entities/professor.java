@@ -1,7 +1,5 @@
 package com.ProyectoFinal.api_rest.entities;
 
-import java.util.List;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;

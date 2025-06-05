@@ -2,8 +2,6 @@ package com.ProyectoFinal.api_rest.entities;
 
 import java.time.LocalDate;
 
-import org.springframework.cglib.core.Local;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
