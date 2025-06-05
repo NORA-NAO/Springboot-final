@@ -7,6 +7,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +28,7 @@ public class nota {
 
     @ManyToOne
     @JoinColumn(name = "periodo_id")
-    private perodoLectivo periodo;
+    private periodoLectivo periodo;
 
     @ManyToOne
     @JoinColumn(name = "asignatura_id")
@@ -34,6 +38,10 @@ public class nota {
     @JoinColumn(name = "estudiante_id")
     private studient estudiante;
 
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 10)
     private Integer valor;
+    @NotBlank
     private String observaciones;
 }

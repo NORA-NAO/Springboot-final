@@ -2,7 +2,6 @@ package com.ProyectoFinal.api_rest.services;
 
 import java.util.List;
 
-import com.ProyectoFinal.api_rest.entities.asignaturas;
 import com.ProyectoFinal.api_rest.entities.matricula;
 import com.ProyectoFinal.api_rest.entities.nota;
 

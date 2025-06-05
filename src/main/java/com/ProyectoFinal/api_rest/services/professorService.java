@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import com.ProyectoFinal.api_rest.entities.asignaturas;
 import com.ProyectoFinal.api_rest.entities.professor;
-import com.ProyectoFinal.api_rest.entities.user;
 
 public interface professorService {
     

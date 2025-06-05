@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,8 +20,11 @@ public class material {
     @Id
     private Long id;
 
+    @NotBlank
     private String titulo;
+    @NotBlank
     private String descripcion;
+    @NotBlank
     private String archivo_url;
 
     @ManyToOne

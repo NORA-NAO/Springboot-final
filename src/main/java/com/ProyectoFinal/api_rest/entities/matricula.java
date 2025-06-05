@@ -21,7 +21,7 @@ public class matricula {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "periodo_id")
-    private perodoLectivo periodo;
+    private periodoLectivo periodo;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")
