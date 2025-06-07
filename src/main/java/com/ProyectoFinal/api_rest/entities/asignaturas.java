@@ -1,5 +1,7 @@
 package com.ProyectoFinal.api_rest.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,6 +26,7 @@ public class asignaturas {
     private String nombre_Asignatura;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "id_professor")
     private professor profesor;
 

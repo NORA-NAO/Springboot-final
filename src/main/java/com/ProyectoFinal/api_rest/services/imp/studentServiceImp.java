@@ -32,7 +32,7 @@ public class studentServiceImp implements studientService {
     public studient save(studient estudiante) {
         user usuarioEstudiante = estudiante.getUsuario();
         if (usuarioEstudiante.getId() == null){
-            usuarioEstudiante.setEmail("Estudiante");
+            usuarioEstudiante.setRol("Estudiante");
             usuarioEstudiante = usuarios.save(usuarioEstudiante);
         }
         estudiante.setUsuario(usuarioEstudiante);

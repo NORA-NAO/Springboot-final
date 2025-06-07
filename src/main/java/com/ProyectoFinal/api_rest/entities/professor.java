@@ -2,6 +2,8 @@ package com.ProyectoFinal.api_rest.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,5 +35,6 @@ public class professor {
     @NotBlank
     private String especialidad;
     @OneToMany(mappedBy = "profesor")
+    @JsonManagedReference
     private List<asignaturas> asignaturas;
 }
