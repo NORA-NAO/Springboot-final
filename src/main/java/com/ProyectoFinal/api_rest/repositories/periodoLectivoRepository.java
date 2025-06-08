@@ -1,9 +1,0 @@
-package com.ProyectoFinal.api_rest.repositories;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.ProyectoFinal.api_rest.entities.periodoLectivo;
-
-public interface periodoLectivoRepository extends JpaRepository<periodoLectivo, Long> {
-
-}
