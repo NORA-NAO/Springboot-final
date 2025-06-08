@@ -46,12 +46,7 @@ public class userController {
     }
 
     //SE TIENE QUE MOVER
-   @PostMapping
-   public ResponseEntity<?> create(@Valid @RequestBody user usuario, BindingResult result) {   
-        if (result.hasFieldErrors())
-           return validationMessage.validation(result);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarios.save(usuario));
-    } 
+   
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody user usuario, BindingResult result) {

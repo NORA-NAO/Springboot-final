@@ -1,115 +1,112 @@
 package com.ProyectoFinal.api_rest.security.filter;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ProyectoFinal.api_rest.entities.login;
+import com.ProyectoFinal.api_rest.entities.user;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.ProyectoFinal.api_rest.entities.user;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
+import javax.crypto.SecretKey;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.ProyectoFinal.api_rest.security.tokenJWTConfig.*;
 
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
-    
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final SecretKey secretKey;
 
-    
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, SecretKey secretKey) {
         this.authenticationManager = authenticationManager;
+        this.secretKey = secretKey;
+        setFilterProcessesUrl("/api/auth/login"); // Establece la URL de login
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
-        user usuario = null;
-        String email = null;
-        String password = null;
-
+    public Authentication attemptAuthentication(HttpServletRequest request, 
+                                              HttpServletResponse response) 
+                                              throws AuthenticationException {
         try {
-            usuario = new ObjectMapper().readValue( request.getInputStream(), user.class);
-            email = usuario.getEmail();
-            password = usuario.getPassword();
-        } catch (StreamReadException e) {
-            e.printStackTrace();
-        } catch (DatabindException e) {
-            e.printStackTrace();
+            login user = new ObjectMapper().readValue(request.getInputStream(), login.class);
+            String email = user.getUsername(); // Asumo que tienes getEmail() en tu entidad User
+            String password = user.getPassword();
+
+            UsernamePasswordAuthenticationToken authToken = 
+                new UsernamePasswordAuthenticationToken(email, password);
+            
+            return authenticationManager.authenticate(authToken);
+            
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error al leer las credenciales", e);
         }
-
-        UsernamePasswordAuthenticationToken authenticationToken = new 
-        UsernamePasswordAuthenticationToken(email, password);
-
-        return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-            Authentication authResult) throws IOException, ServletException {
-        User usuario = (User) authResult.getPrincipal();
-        String email = usuario.getUsername();
-        Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
+    protected void successfulAuthentication(HttpServletRequest request,
+                                          HttpServletResponse response,
+                                          FilterChain chain,
+                                          Authentication authResult) 
+                                          throws IOException {
+        UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+        String username = userDetails.getUsername();
+        
+        // Convertir roles a formato string
+        String authorities = userDetails.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining(","));
 
-        Claims claims = Jwts.claims()
-        .add("authorities", roles)
-        .add("username", email)
-        .build();
-
+        // Construir el token JWT
         String token = Jwts.builder()
-        .subject(email)
-        .claims(claims)
-        .expiration(new Date(System.currentTimeMillis() + 1800000))
-        .issuedAt(new Date())
-        .signWith(SECRET_KEY)
-        .compact();
+            .subject(username)
+            .claim("authorities", authorities)
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + 1800000))
+            .signWith(secretKey)
+            .compact();
 
+        // Añadir token al header
         response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
 
-        Map<String, String> body = new HashMap<>();
+        // Crear cuerpo de la respuesta
+        Map<String, Object> body = new HashMap<>();
         body.put("token", token);
-        body.put("username", email);
-        body.put("message", String.format("Hola %s has iniciado sesion con exito!",
-         email));
+        body.put("username", username);
+        body.put("message", "Autenticación exitosa");
+        body.put("authorities", authorities);
 
-        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
         response.setContentType(CONTEN_TYPE);
-        response.setStatus(200);
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+        response.getWriter().flush();
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException failed) throws IOException, ServletException {
-                Map<String, String> body = new HashMap<>();
-                body.put("message", "Error en la autenticacion, email o password incorrectos");
-                body.put("error", failed.getMessage());
+    protected void unsuccessfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            AuthenticationException failed) 
+                                            throws IOException {
+        Map<String, String> body = new HashMap<>();
+        body.put("message", "Error en la autenticación: credenciales incorrectas");
+        body.put("error", failed.getLocalizedMessage());
 
-                response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-                response.setStatus(401);
-                response.setContentType(CONTEN_TYPE);
+        response.setContentType(CONTEN_TYPE);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+        response.getWriter().flush();
     }
-
-
 }

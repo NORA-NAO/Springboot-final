@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -34,12 +35,15 @@ public class user {
     @Column(unique = true)
     private String email;
     @NotBlank
-    @Size(min = 3, max = 30)
     private String password;
-    @NotBlank
     @ManyToOne
+    @JoinColumn(name="id_rol")
     private Role rol; 
     @Transient
-    private boolean admin, student, professor;
+    private boolean admin;
+    @Transient
+    private boolean student;
+    @Transient
+    private boolean professor;
   
 }

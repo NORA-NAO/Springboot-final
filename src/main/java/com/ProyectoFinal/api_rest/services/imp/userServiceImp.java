@@ -14,6 +14,8 @@ import com.ProyectoFinal.api_rest.repositories.roleRepository;
 import com.ProyectoFinal.api_rest.repositories.userRepository;
 import com.ProyectoFinal.api_rest.services.userService;
 
+import io.jsonwebtoken.security.Jwks.OP;
+
 @Service
 public class userServiceImp implements userService {
 
@@ -43,14 +45,17 @@ public class userServiceImp implements userService {
             Optional<Role> roleOptional = roles.findByName("ROLE_ADMIN");
             if (roleOptional.isPresent())
                 usuario.setRol(roleOptional.get());
-        } else if (usuario.isProfessor()) {
+        }
+        if (usuario.isProfessor()) {
             Optional<Role> roleOptional = roles.findByName("ROLE_PROFESSOR");
             if (roleOptional.isPresent())
                 usuario.setRol(roleOptional.get());
+        } 
+        if(usuario.isStudent()){
+            Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
+            if (roleOptional.isPresent())
+                usuario.setRol(roleOptional.get());
         }
-        Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
-        if (roleOptional.isPresent())
-            usuario.setRol(roleOptional.get());
 
         usuario.setName(usuario.getName());
         usuario.setEmail(usuario.getEmail());
@@ -90,5 +95,11 @@ public class userServiceImp implements userService {
         Optional<user> optionalUser = usuarios.findById(id);
         optionalUser.ifPresent(usuarios::delete);
         return optionalUser;
+    }
+
+    @Override
+    public Optional<user> findByEmail(String email) {
+        return usuarios.findByEmail(email);
+
     }
 }

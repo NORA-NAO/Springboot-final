@@ -11,4 +11,5 @@ public interface userService {
     user save(user usuario);
     Optional<user> update(Long id, user usuario);
     Optional<user> delete(Long id);
+    Optional<user> findByEmail(String email);
 }
