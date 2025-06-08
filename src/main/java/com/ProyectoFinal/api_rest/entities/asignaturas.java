@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ public class asignaturas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; 
+    @Size(min = 4, max = 65)
     private String nombre_Asignatura;
 
     @ManyToOne

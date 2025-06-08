@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ProyectoFinal.api_rest.entities.Role;
 import com.ProyectoFinal.api_rest.entities.user;
+import com.ProyectoFinal.api_rest.repositories.roleRepository;
 import com.ProyectoFinal.api_rest.repositories.userRepository;
 import com.ProyectoFinal.api_rest.services.userService;
 
@@ -16,6 +19,10 @@ public class userServiceImp implements userService {
 
     @Autowired
     private userRepository usuarios;
+    @Autowired
+    private roleRepository roles;
+    @Autowired
+    private PasswordEncoder encoder;
 
     @Override
     @Transactional(readOnly = true)
@@ -32,6 +39,22 @@ public class userServiceImp implements userService {
     @Override
     @Transactional
     public user save(user usuario) {
+        if (usuario.isAdmin()) {
+            Optional<Role> roleOptional = roles.findByName("ROLE_ADMIN");
+            if (roleOptional.isPresent())
+                usuario.setRol(roleOptional.get());
+        } else if (usuario.isProfessor()) {
+            Optional<Role> roleOptional = roles.findByName("ROLE_PROFESSOR");
+            if (roleOptional.isPresent())
+                usuario.setRol(roleOptional.get());
+        }
+        Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
+        if (roleOptional.isPresent())
+            usuario.setRol(roleOptional.get());
+
+        usuario.setName(usuario.getName());
+        usuario.setEmail(usuario.getEmail());
+        usuario.setPassword(encoder.encode(usuario.getPassword()));
         return usuarios.save(usuario);
     }
 
@@ -39,12 +62,23 @@ public class userServiceImp implements userService {
     @Transactional
     public Optional<user> update(Long id, user usuario) {
         Optional<user> optionalUser = usuarios.findById(id);
-        if (optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             user usuarioDB = optionalUser.orElseThrow();
             usuarioDB.setName(usuario.getName());
             usuarioDB.setEmail(usuario.getEmail());
             usuarioDB.setPassword(usuario.getPassword());
-            usuarioDB.setRol(usuario.getRol());
+            if (usuario.isAdmin()) {
+                Optional<Role> roleOptional = roles.findByName("ROLE_ADMIN");
+                if (roleOptional.isPresent())
+                    usuario.setRol(roleOptional.get());
+            } else if (usuario.isProfessor()) {
+                Optional<Role> roleOptional = roles.findByName("ROLE_PROFESSOR");
+                if (roleOptional.isPresent())
+                    usuario.setRol(roleOptional.get());
+            }
+            Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
+            if (roleOptional.isPresent())
+                usuario.setRol(roleOptional.get());
             return Optional.of(usuarios.save(usuarioDB));
         }
         return optionalUser;

@@ -24,7 +24,7 @@ public class periodoLectivo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
-    private String nombre;
+    private String nombre; //checar con curso
     @NotNull
     private LocalDate fecha_inicio;
     @NotNull

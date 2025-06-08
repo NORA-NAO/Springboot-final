@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ProyectoFinal.api_rest.entities.Role;
 import com.ProyectoFinal.api_rest.entities.nota;
 import com.ProyectoFinal.api_rest.entities.studient;
 import com.ProyectoFinal.api_rest.entities.user;
 import com.ProyectoFinal.api_rest.repositories.notaRepository;
+import com.ProyectoFinal.api_rest.repositories.roleRepository;
 import com.ProyectoFinal.api_rest.repositories.studientRepository;
 import com.ProyectoFinal.api_rest.repositories.userRepository;
 import com.ProyectoFinal.api_rest.services.studientService;
@@ -23,16 +25,21 @@ public class studentServiceImp implements studientService {
 
     @Autowired
     private userRepository usuarios;
-    
+
     @Autowired
     private notaRepository notas;
+
+    @Autowired
+    private roleRepository roles;
 
     @Override
     @Transactional
     public studient save(studient estudiante) {
         user usuarioEstudiante = estudiante.getUsuario();
-        if (usuarioEstudiante.getId() == null){
-            usuarioEstudiante.setRol("Estudiante");
+        if (usuarioEstudiante.getId() == null) {
+            Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
+            if (roleOptional.isPresent())
+                usuarioEstudiante.setRol(roleOptional.get());
             usuarioEstudiante = usuarios.save(usuarioEstudiante);
         }
         estudiante.setUsuario(usuarioEstudiante);
@@ -55,11 +62,11 @@ public class studentServiceImp implements studientService {
     @Transactional(readOnly = true)
     public List<nota> findAllNotas(Long id) {
         Optional<studient> optionalEstudiante = estudiantes.findById(id);
-        if (optionalEstudiante.isPresent()){
+        if (optionalEstudiante.isPresent()) {
             studient estudianteDB = optionalEstudiante.orElseThrow();
             return notas.findByEstudiante(estudianteDB);
         }
         return List.of();
     }
-    
+
 }

@@ -14,6 +14,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,6 +34,7 @@ public class professor {
     @NotNull
     private user usuario;
     @NotBlank
+    @Size(min = 4, max = 45)
     private String especialidad;
     @OneToMany(mappedBy = "profesor")
     @JsonManagedReference

@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 @RestController
 @RequestMapping("api/usuarios")
 public class userController {
-    
+
     @Autowired
     private userService usuarios;
 
@@ -43,13 +45,13 @@ public class userController {
         return ResponseEntity.notFound().build();
     }
 
-    // No creo que vaya aquí, pero lo dejo por si lo necesitas para crear un usuario
-    // @PostMapping
-    // public ResponseEntity<?> create(@Valid @RequestBody user usuario, BindingResult result) {
-    //     if (result.hasFieldErrors())
-    //         return validation(result);
-    //     return ResponseEntity.status(HttpStatus.CREATED).body(usuarios.save(usuario));
-    // }
+    //SE TIENE QUE MOVER
+   @PostMapping
+   public ResponseEntity<?> create(@Valid @RequestBody user usuario, BindingResult result) {   
+        if (result.hasFieldErrors())
+           return validationMessage.validation(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarios.save(usuario));
+    } 
 
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody user usuario, BindingResult result) {

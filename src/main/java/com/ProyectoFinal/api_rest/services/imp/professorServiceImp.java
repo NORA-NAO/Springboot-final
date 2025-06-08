@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ProyectoFinal.api_rest.entities.Role;
 import com.ProyectoFinal.api_rest.entities.asignaturas;
 import com.ProyectoFinal.api_rest.entities.professor;
 import com.ProyectoFinal.api_rest.entities.user;
 import com.ProyectoFinal.api_rest.repositories.professorRepository;
+import com.ProyectoFinal.api_rest.repositories.roleRepository;
 import com.ProyectoFinal.api_rest.repositories.userRepository;
 import com.ProyectoFinal.api_rest.services.professorService;
 
@@ -22,6 +24,9 @@ public class professorServiceImp implements professorService {
 
     @Autowired
     private userRepository usuarios;
+
+    @Autowired
+    private roleRepository roles;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,7 +45,9 @@ public class professorServiceImp implements professorService {
     public professor save(professor profesor) {
         user usuarioProfe = profesor.getUsuario();
         if (usuarioProfe.getId() == null){
-            usuarioProfe.setRol("Profesor");
+            Optional<Role> roleOptional = roles.findByName("ROLE_PROFESSOR");
+            if (roleOptional.isPresent())
+                usuarioProfe.setRol(roleOptional.get());
             usuarioProfe = usuarios.save(usuarioProfe);
         }
         profesor.setUsuario(usuarioProfe);
