@@ -34,23 +34,29 @@ public class SpringSecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.GET, "/api/estudiantes")
-						.hasRole("ADMIN")
-						.requestMatchers("/api/auth/register").permitAll()
-						.requestMatchers("/error").permitAll()
-						.requestMatchers(HttpMethod.POST,"/api/usuarios").permitAll()
-						.requestMatchers("/api/usuarios", "/api/asignaturas", "/api/cursos",
-						"/api/periodos")
-						.hasRole("ADMIN")
-						.requestMatchers(HttpMethod.GET, "/api/profesores", "/api/profesores/{id}",
-						"/api/estudiantes", "/api/estudiantes/{id}")
-						.hasRole("ADMIN")
-						.requestMatchers(HttpMethod.GET, "/api/profesores/{id}/asignaturas",
-						"/api/asignaturas",
-						"/api/asignaturas/{id}")
-						.hasRole("PROFESSOR")
-						.requestMatchers(HttpMethod.GET,
-						"/api/estudiantes/{id}/notas").hasRole("STUDENT")
+						.requestMatchers("/api/auth").hasRole("ADMIN")
+						.requestMatchers("/api/usuarios").hasRole("ADMIN")
+						.requestMatchers("/api/profesores/").hasRole("ADMIN")
+						.requestMatchers("/api/profesores/{id}").hasRole("ADMIN")
+						.requestMatchers("/api/profesores/{id}/asignaturas").hasRole("PROFESSOR")
+						.requestMatchers("/api/estudiantes/").hasRole("ADMIN")
+						.requestMatchers("/api/estudiantes/{id}").hasRole("ADMIN")
+						.requestMatchers("/api/estudiantes/{id}/notas").hasRole("STUDENT")
+						.requestMatchers("/api/asignaturas").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.GET, "/api/asignaturas/").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.GET, "/api/asignaturas/{id}").hasRole("PROFESSOR")
+						.requestMatchers("/api/cursos").hasRole("ADMIN")
+						.requestMatchers("/api/periodos").hasRole("ADMIN")
+						.requestMatchers(HttpMethod.POST, "/api/notas/").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.GET, "/api/notas/asignatura/{id}").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.GET, "/api/notas/{id}").hasRole("STUDENT")
+						.requestMatchers(HttpMethod.PUT, "/api/notas/{id}").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.DELETE, "/api/notas/{id}").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.POST, "/api/materiales/").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.GET, "/api/materiales/asignatura/{id}").hasRole("PROFESSOR")
+						.requestMatchers(HttpMethod.GET, "/api/materiales/asignatura/{id}").hasRole("STUDENT")
+						.requestMatchers(HttpMethod.DELETE, "/api/materiales/{id}").hasRole("PROFESSOR")
+						.requestMatchers("/api/reportes").hasRole("ADMIN")
 						.anyRequest().authenticated())
 						.addFilter(new JwtAuthenticationFilter(authenticationManager()))
 						.addFilter(new JwtValidationFilter(authenticationManager()))

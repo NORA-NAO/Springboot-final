@@ -1,7 +1,9 @@
 package com.hitss.springboot.app_apirest.services.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,8 @@ import com.hitss.springboot.app_apirest.services.NotaService;
 import com.hitss.springboot.app_apirest.services.PeriodoLectivoService;
 import com.hitss.springboot.app_apirest.services.AsignaturaService;
 import com.hitss.springboot.app_apirest.services.StudentService;
+import com.hitss.springboot.app_apirest.services.impl.dto.PromedioAsignaturaCursoDTO;
+import com.hitss.springboot.app_apirest.services.impl.dto.calificacionesDTO;
 import com.hitss.springboot.app_apirest.repositories.NotaRepository;
 import com.hitss.springboot.app_apirest.entities.Nota;
 import com.hitss.springboot.app_apirest.entities.PeriodoLectivo;
@@ -52,14 +56,14 @@ public class NotaServiceImpl implements NotaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Nota> findByAssignature(Long id) {
-        return findByAssignature(id);
+    public List<Nota> findByAsignatura(Asignaturas asignaturas) {
+        return notas.findByAsignatura(asignaturas);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Nota> findByStudent(Long id) {
-        return findByStudent(id);
+    public List<Nota> findByEstudiante(Student estudiante) {
+        return notas.findByEstudiante(estudiante);
     }
 
     @Override
@@ -84,5 +88,16 @@ public class NotaServiceImpl implements NotaService {
         Optional<Nota> optionalNota = notas.findById(id);
         optionalNota.ifPresent(notas::delete);
         return optionalNota;
+    }
+
+    @Override
+    public List<calificacionesDTO> findAllValues(Integer id) {
+        List<Object[]> resultados = notas.findAllValues(id);
+        return resultados.stream()
+            .map(row -> new calificacionesDTO(
+                (String) row[0],  // asignatura
+                (Integer) row[1]  // curso
+            ))
+            .collect(Collectors.toList());
     }
 }

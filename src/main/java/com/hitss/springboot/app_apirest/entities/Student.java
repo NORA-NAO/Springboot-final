@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "products")
+@Table(name = "estudiantes")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,5 +33,7 @@ public class Student {
 	private Long matricula;
 
 	@NotBlank
-	private String actualCourse;
+	@ManyToOne
+	@JoinColumn(name = "curso_id")
+	private Curso actualCourse;
 }
