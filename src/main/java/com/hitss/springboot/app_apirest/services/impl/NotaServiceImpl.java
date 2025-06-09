@@ -1,6 +1,5 @@
 package com.hitss.springboot.app_apirest.services.impl;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -13,7 +12,6 @@ import com.hitss.springboot.app_apirest.services.NotaService;
 import com.hitss.springboot.app_apirest.services.PeriodoLectivoService;
 import com.hitss.springboot.app_apirest.services.AsignaturaService;
 import com.hitss.springboot.app_apirest.services.StudentService;
-import com.hitss.springboot.app_apirest.services.impl.dto.PromedioAsignaturaCursoDTO;
 import com.hitss.springboot.app_apirest.services.impl.dto.calificacionesDTO;
 import com.hitss.springboot.app_apirest.repositories.NotaRepository;
 import com.hitss.springboot.app_apirest.entities.Nota;
@@ -39,15 +37,12 @@ public class NotaServiceImpl implements NotaService {
     @Override
     @Transactional
     public Nota save(Nota Note) {
-        PeriodoLectivo periodo = Note.getPeriodo();
-        if (periodo.getId() == null)
-            periodo = periodos.save(periodo);
-        Asignaturas asig = Note.getAsignatura();
-        if (asig.getId() == null)
-            asig = asigs.save(asig);
-        Student estudiante = Note.getEstudiante();
-        if (estudiante.getId() == null)
-            estudiante = estudiantes.save(estudiante);
+        Long periodoId = Note.getPeriodo().getId();
+        PeriodoLectivo periodo = periodos.findById(periodoId).orElseThrow();
+        Long asigId = Note.getAsignatura().getId();
+        Asignaturas asig = asigs.findById(asigId).orElseThrow();
+        Long estudianteId = Note.getEstudiante().getId();
+        Student estudiante = estudiantes.findById(estudianteId).orElseThrow();
         Note.setPeriodo(periodo);
         Note.setAsignatura(asig);
         Note.setEstudiante(estudiante);
@@ -72,9 +67,15 @@ public class NotaServiceImpl implements NotaService {
         Optional<Nota> optionalNote = notas.findById(id);
         if (optionalNote.isPresent()){
             Nota notaBD = optionalNote.orElseThrow();
-            notaBD.setPeriodo(note.getPeriodo());
-            notaBD.setAsignatura(note.getAsignatura());
-            notaBD.setEstudiante(note.getEstudiante());
+            Long periodoId = note.getPeriodo().getId();
+            PeriodoLectivo periodo = periodos.findById(periodoId).orElseThrow();
+            Long asigId = note.getAsignatura().getId();
+            Asignaturas asig = asigs.findById(asigId).orElseThrow();
+            Long estudianteId = note.getEstudiante().getId();
+            Student estudiante = estudiantes.findById(estudianteId).orElseThrow();
+            notaBD.setPeriodo(periodo);
+            notaBD.setAsignatura(asig);
+            notaBD.setEstudiante(estudiante);
             notaBD.setValor(note.getValor());
             notaBD.setObservaciones(note.getObservaciones());
             return Optional.of(notas.save(notaBD));

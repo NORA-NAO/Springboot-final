@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hitss.springboot.app_apirest.services.CursoService;
-import com.hitss.springboot.app_apirest.services.impl.dto.calificacionesDTO;
 import com.hitss.springboot.app_apirest.services.impl.dto.cursoDetalleDTO;
 import com.hitss.springboot.app_apirest.repositories.CursoRepository;
 import com.hitss.springboot.app_apirest.entities.Curso;

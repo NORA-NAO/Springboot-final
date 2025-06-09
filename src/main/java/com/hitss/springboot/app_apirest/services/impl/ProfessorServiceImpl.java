@@ -43,14 +43,14 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Override
     @Transactional
     public Professor save(Professor profesor) {
-        User usuarioProfe = profesor.getUsuario();
+        Long idUsuario = profesor.getUsuario().getId();
+        Optional<User> userOptional = usuarios.findById(idUsuario);
+        User usuarioProfe = userOptional.orElseThrow();
         List<Role> roles_profe = new ArrayList<>();
-        if (usuarioProfe.getId() == null){
-            Optional<Role> roleOptional = roles.findByName("ROLE_PROFESSOR");
-            roleOptional.ifPresent(roles_profe::add);
-            usuarioProfe.setRoles(roles_profe);
-            usuarioProfe = usuarios.save(usuarioProfe);
-        }
+        Optional<Role> roleOptional = roles.findByName("ROLE_PROFESSOR");
+        roleOptional.ifPresent(roles_profe::add);
+        usuarioProfe.setRoles(roles_profe);
+        usuarioProfe = usuarios.save(usuarioProfe);
         profesor.setUsuario(usuarioProfe);
         return profesores.save(profesor);
     }

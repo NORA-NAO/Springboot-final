@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.hitss.springboot.app_apirest.entities.Curso;
-import com.hitss.springboot.app_apirest.services.impl.dto.calificacionesDTO;
 import com.hitss.springboot.app_apirest.services.impl.dto.cursoDetalleDTO;
 
 public interface CursoService {

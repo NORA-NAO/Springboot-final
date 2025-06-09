@@ -30,12 +30,10 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     @Transactional
     public Material save(Material m) {
-        Asignaturas asig = m.getAsignatura();
-        if (asig.getId() == null)
-            asig = asignaturas.save(asig);
-        Professor profe = m.getProfesor();
-        if (profe.getId() == null)
-            profe = profesores.save(profe);
+        Long asignaturaId = m.getAsignatura().getId();
+        Asignaturas asig = asignaturas.findById(asignaturaId).orElseThrow();
+        Long profesorId = m.getProfesor().getId();
+        Professor profe = profesores.findById(profesorId).orElseThrow();
         m.setAsignatura(asig);
         m.setProfesor(profe);
         return materiales.save(m);

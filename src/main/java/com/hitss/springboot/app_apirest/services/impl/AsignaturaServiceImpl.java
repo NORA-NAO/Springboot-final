@@ -31,16 +31,13 @@ public class AsignaturaServiceImpl implements AsignaturaService {
     @Override
     @Transactional
     public Asignaturas save(Asignaturas asig) {
-        Professor profe = asig.getProfesor();
-        if (profe.getId() == null)
-            profe = profesores.save(profe);
-        Curso c = asig.getCurso();
-        if (c.getId() == null)
-            c = cursos.save(c);
+        Long profeId = asig.getProfesor().getId();
+        Professor profe = profesores.findById(profeId).orElseThrow();
+        Long cursoId = asig.getCurso().getId();
+        Curso c = cursos.findById(cursoId).orElseThrow();
         asig.setProfesor(profe);
         asig.setCurso(c);
         return asigs.save(asig);
-
     }
 
     @Override
@@ -62,8 +59,10 @@ public class AsignaturaServiceImpl implements AsignaturaService {
         if (optionalAsig.isPresent()){
             Asignaturas asignaturaDB = optionalAsig.orElseThrow();
             asignaturaDB.setNombre_Asignatura(as.getNombre_Asignatura());
-            asignaturaDB.setProfesor(as.getProfesor());
-            asignaturaDB.setCurso(as.getCurso());
+            Professor profe = profesores.findById(as.getProfesor().getId()).orElseThrow();
+            asignaturaDB.setProfesor(profe);
+            Curso c = cursos.findById(as.getCurso().getId()).orElseThrow();
+            asignaturaDB.setCurso(c);
             return Optional.of(asigs.save(asignaturaDB));
         }
         return optionalAsig;

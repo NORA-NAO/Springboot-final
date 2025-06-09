@@ -36,14 +36,14 @@ public class StudentServiceImpl implements StudentService {
     @Override
     @Transactional
     public Student save(Student estudiante) {
-        User usuarioEstudiante = estudiante.getUser();
+        Long idUsuario = estudiante.getUser().getId();
+        Optional<User> usuarioOptional = usuarios.findById(idUsuario);
+        User usuarioEstudiante = usuarioOptional.orElseThrow();
         List<Role> roles_estudiante = new ArrayList<>();
-        if (usuarioEstudiante.getId() == null) {
-            Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
-            roleOptional.ifPresent(roles_estudiante::add);
-            usuarioEstudiante.setRoles(roles_estudiante);
-            usuarioEstudiante = usuarios.save(usuarioEstudiante);
-        }
+        Optional<Role> roleOptional = roles.findByName("ROLE_STUDENT");
+        roleOptional.ifPresent(roles_estudiante::add);
+        usuarioEstudiante.setRoles(roles_estudiante);
+        usuarioEstudiante = usuarios.save(usuarioEstudiante);
         estudiante.setUser(usuarioEstudiante);
         return estudiantes.save(estudiante);
     }

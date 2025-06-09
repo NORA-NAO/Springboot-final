@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hitss.springboot.app_apirest.entities.User;
 import com.hitss.springboot.app_apirest.services.UserService;
 import com.hitss.springboot.app_apirest.utils.validationMessage;
+import com.hitss.springboot.app_apirest.services.impl.dto.userDTO;
 
 import jakarta.validation.Valid;
 
@@ -57,8 +58,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id){
         Optional<User> userOptional = usuarios.delete(id);
-        if(userOptional.isPresent())
-            return ResponseEntity.ok(userOptional.get());
+        if(userOptional.isPresent()){
+            User usuario = userOptional.orElseThrow();
+            userDTO mostrar = new userDTO(usuario.getId(), usuario.getUsername(), usuario.getUsername());
+            return ResponseEntity.ok(mostrar);
+        }
         return ResponseEntity.notFound().build();
     }
 }

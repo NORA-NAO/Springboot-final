@@ -34,6 +34,7 @@ public class SpringSecurityConfig {
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/error").permitAll()
 						.requestMatchers("/api/auth").hasRole("ADMIN")
 						.requestMatchers("/api/usuarios").hasRole("ADMIN")
 						.requestMatchers("/api/profesores/").hasRole("ADMIN")
@@ -43,6 +44,7 @@ public class SpringSecurityConfig {
 						.requestMatchers("/api/estudiantes/{id}").hasRole("ADMIN")
 						.requestMatchers("/api/estudiantes/{id}/notas").hasRole("STUDENT")
 						.requestMatchers("/api/asignaturas").hasRole("ADMIN")
+						.requestMatchers("/api/asignaturas/{id}").hasRole("ADMIN")
 						.requestMatchers(HttpMethod.GET, "/api/asignaturas/").hasRole("PROFESSOR")
 						.requestMatchers(HttpMethod.GET, "/api/asignaturas/{id}").hasRole("PROFESSOR")
 						.requestMatchers("/api/cursos").hasRole("ADMIN")
@@ -53,8 +55,8 @@ public class SpringSecurityConfig {
 						.requestMatchers(HttpMethod.PUT, "/api/notas/{id}").hasRole("PROFESSOR")
 						.requestMatchers(HttpMethod.DELETE, "/api/notas/{id}").hasRole("PROFESSOR")
 						.requestMatchers(HttpMethod.POST, "/api/materiales/").hasRole("PROFESSOR")
-						.requestMatchers(HttpMethod.GET, "/api/materiales/asignatura/{id}").hasRole("PROFESSOR")
 						.requestMatchers(HttpMethod.GET, "/api/materiales/asignatura/{id}").hasRole("STUDENT")
+						.requestMatchers(HttpMethod.GET, "/api/materiales/{id}").hasRole("PROFESSOR")
 						.requestMatchers(HttpMethod.DELETE, "/api/materiales/{id}").hasRole("PROFESSOR")
 						.requestMatchers("/api/reportes").hasRole("ADMIN")
 						.anyRequest().authenticated())
